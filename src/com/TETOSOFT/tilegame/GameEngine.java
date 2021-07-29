@@ -2,23 +2,22 @@ package com.TETOSOFT.tilegame;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import com.TETOSOFT.graphics.*;
 import com.TETOSOFT.input.*;
 import com.TETOSOFT.test.GameCore;
 import com.TETOSOFT.tilegame.sprites.*;
+import me.CowGoesMOOOO.helper.DimensionMismatchException;
+import me.CowGoesMOOOO.helper.Matrix;
+import me.CowGoesMOOOO.helper.MatrixMath;
 
 /**
  * GameManager manages all parts of the game.
  */
 public class GameEngine extends GameCore 
 {
-    
-    public static void main(String[] args) 
-    {
-        new GameEngine().run();
-    }
     
     public static final float GRAVITY = 0.002f;
     
@@ -34,7 +33,18 @@ public class GameEngine extends GameCore
     private GameAction exit;
     private int collectedStars=0;
     private int numLives=6;
-   
+
+    public static void main(String[] args) throws DimensionMismatchException {
+        double[][] a = {{2,3}, {1,4}, {2,1}};
+        double[][] b = {{3,1,2}, {2,4,2}};
+
+        Matrix matA = new Matrix(3,2,a);
+        Matrix matB = new Matrix(2,3,b);
+
+        System.out.println(Arrays.deepToString(MatrixMath.dotProd(matA, matB).getMatrix()));
+        //new GameEngine().run();
+    }
+
     public void init()
     {
         super.init();
