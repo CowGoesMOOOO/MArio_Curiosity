@@ -35,14 +35,7 @@ public class GameEngine extends GameCore
     private int numLives=6;
 
     public static void main(String[] args) throws DimensionMismatchException {
-        double[][] a = {{2,3}, {1,4}, {2,1}};
-        double[][] b = {{3,1,2}, {2,4,2}};
-
-        Matrix matA = new Matrix(3,2,a);
-        Matrix matB = new Matrix(2,3,b);
-
-        System.out.println(Arrays.deepToString(MatrixMath.dotProd(matA, matB).getMatrix()));
-        //new GameEngine().run();
+        new GameEngine().run();
     }
 
     public void init()

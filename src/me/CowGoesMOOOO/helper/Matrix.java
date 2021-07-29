@@ -13,6 +13,7 @@ public class Matrix {
         this.column = col;
         this.row = row;
         mat = new double[row][col];
+        fillGaussian();
     }
 
     public Matrix(int row, int col, double[][] mat){
