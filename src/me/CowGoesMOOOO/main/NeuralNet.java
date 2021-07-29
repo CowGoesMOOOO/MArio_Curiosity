@@ -40,10 +40,10 @@ public class NeuralNet {
      * @param x Number to parse through
      * @return Activation number
      */
-    private double[][] sigmoid(double[][] x){
-        for(int i = 0; i < x.length; i++){
-            for(int j = 0; j < x[0].length; j++){
-                x[i][j] = 1/(1+Math.exp(-x[i][j]));
+    private Matrix sigmoid(Matrix x){
+        for(int i = 0; i < x.getRow(); i++){
+            for(int j = 0; j < x.getColumn(); j++){
+                x.getMatrix()[i][j] = 1/(1+Math.exp(-x.getMatrix()[i][j]));
             }
         }
 
@@ -53,10 +53,10 @@ public class NeuralNet {
     /**
      * Derivative from the sigmoid function
      */
-    private double[][] dsigmoid(double[][] x){
-        for(int i = 0; i < x.length; i++){
-            for(int j = 0; j < x[0].length; j++){
-                x[i][j] = Math.exp(-x[i][j])/((1+Math.exp(-x[i][j]))*(1+Math.exp(-x[i][j])));
+    private Matrix dsigmoid(Matrix x){
+        for(int i = 0; i < x.getRow(); i++){
+            for(int j = 0; j < x.getColumn(); j++){
+                x.getMatrix()[i][j] = Math.exp(-x.getMatrix()[i][j])/((1+Math.exp(-x.getMatrix()[i][j]))*(1+Math.exp(-x.getMatrix()[i][j])));
             }
         }
 
