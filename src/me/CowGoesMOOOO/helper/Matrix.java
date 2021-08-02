@@ -16,9 +16,9 @@ public class Matrix {
         fillGaussian();
     }
 
-    public Matrix(int row, int col, double[][] mat){
-        this.column = col;
-        this.row = row;
+    public Matrix(double[][] mat){
+        this.column = mat.length;
+        this.row = mat[0].length;
         this.mat = mat;
     }
 
