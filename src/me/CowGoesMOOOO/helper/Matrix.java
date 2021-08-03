@@ -17,15 +17,15 @@ public class Matrix {
     }
 
     public Matrix(double[][] mat){
-        this.column = mat.length;
-        this.row = mat[0].length;
+        this.column = mat[0].length;
+        this.row = mat.length;
         this.mat = mat;
     }
 
     public void fillGaussian(){
         Random rnd = new Random();
-        for(int i = 0; i < column; i++){
-            for(int j = 0; j < row; j++){
+        for(int i = 0; i < row; i++){
+            for(int j = 0; j < column; j++){
                 mat[i][j] = rnd.nextGaussian();
             }
         }

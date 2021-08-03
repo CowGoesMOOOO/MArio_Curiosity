@@ -9,9 +9,10 @@ import com.TETOSOFT.graphics.*;
 import com.TETOSOFT.input.*;
 import com.TETOSOFT.test.GameCore;
 import com.TETOSOFT.tilegame.sprites.*;
-import me.CowGoesMOOOO.helper.DimensionMismatchException;
 import me.CowGoesMOOOO.helper.Matrix;
 import me.CowGoesMOOOO.helper.MatrixMath;
+import me.CowGoesMOOOO.helper.exceptions.DimensionMismatchException;
+import me.CowGoesMOOOO.main.NeuralNet;
 
 /**
  * GameManager manages all parts of the game.
@@ -34,8 +35,82 @@ public class GameEngine extends GameCore
     private int collectedStars=0;
     private int numLives=6;
 
-    public static void main(String[] args) throws DimensionMismatchException {
-        new GameEngine().run();
+    public static void main(String[] args){
+        //new GameEngine().run();
+        int[] layers = new int[]{4,3,4};
+
+        Matrix test = new Matrix(new double[][]{{2,3,2},{1,4,5},{2,1,6}});
+        Matrix test2 = new Matrix(new double[][]{{3},{2},{8}});
+
+        try {
+            System.out.println(Arrays.deepToString(MatrixMath.dotProd(test,test2).getMatrix()));
+        } catch (DimensionMismatchException e) {
+            e.printStackTrace();
+        }
+
+        NeuralNet nn = new NeuralNet(layers);
+
+        System.out.println("Starting a Neural Network with Layers: " + Arrays.toString(layers));
+
+        double[][] inputs = {
+                {0,0,0,0},
+                {0,0,0,1},
+                {0,0,1,0},
+                {0,0,1,1},
+                {0,1,0,0},
+                {0,1,0,1},
+                {0,1,1,0},
+                {0,1,1,1},
+                {1,0,0,0},
+                {1,0,0,1},
+                {1,0,1,0},
+                {1,0,1,1},
+                {1,1,0,0},
+                {1,1,0,1},
+                {1,1,1,1}
+        };
+
+        double[][] outputs ={
+                {0,0},{0,1},{0,1},{0,0},{1,0},{1,1},{1,1},{1,0},{1,0},{1,1},{1,1},{1,0},{0,0},{0,1},{0,0}
+        };
+
+        double[][] x = {{0},{1},{0},{1}};
+        double[][] y = {{1,0,1,1}};
+        double[][] z = {{0,0,1,1}};
+        double[][] w = {{0,1,0,0}};
+
+        Matrix input = new Matrix(inputs);
+        Matrix output = new Matrix(outputs);
+        Matrix a = new Matrix(x);
+        Matrix b = new Matrix(y);
+        Matrix c = new Matrix(z);
+        Matrix d = new Matrix(w);
+
+        try {
+            System.out.println("----------------------------------");
+            System.out.println("Neural Network: Learning two XOR gates");
+            System.out.println("----------------------------------");
+
+            System.out.println("Expected to be a {1,1} {0,1,0,1}: " + Arrays.deepToString(nn.predict(a).getMatrix()));
+            System.out.println("Expected to be a {1,0} {1,0,1,0}: " + Arrays.deepToString(nn.predict(b).getMatrix()));
+            System.out.println("Expected to be a {0,0} {0,0,1,1}: " + Arrays.deepToString(nn.predict(c).getMatrix()));
+            System.out.println("Expected to be a {1,0} {0,1,0,0}: " + Arrays.deepToString(nn.predict(d).getMatrix()));
+
+            System.out.println("----------------------------------");
+            System.out.println("Training in process, executing 100000 batches!");
+            System.out.println("----------------------------------");
+
+            nn.trainBackprop(input, output, 100000, 1, 0.05);
+
+            System.out.println("Expected to be a {1,1} {0,1,0,1}: " + Arrays.deepToString(nn.predict(a).getMatrix()));
+            System.out.println("Expected to be a {1,0} {1,0,1,1}: " + Arrays.deepToString(nn.predict(b).getMatrix()));
+            System.out.println("Expected to be a {0,0} {0,0,1,1}: " + Arrays.deepToString(nn.predict(c).getMatrix()));
+            System.out.println("Expected to be a {1,0} {0,1,0,0}: " + Arrays.deepToString(nn.predict(d).getMatrix()));
+
+            System.out.println("----------------------------------");
+        }catch(DimensionMismatchException e){
+            e.printStackTrace();
+        }
     }
 
     public void init()

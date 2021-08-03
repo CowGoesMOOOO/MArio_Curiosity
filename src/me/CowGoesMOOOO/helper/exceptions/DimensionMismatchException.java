@@ -1,4 +1,4 @@
-package me.CowGoesMOOOO.helper;
+package me.CowGoesMOOOO.helper.exceptions;
 
 public class DimensionMismatchException extends Exception{
 

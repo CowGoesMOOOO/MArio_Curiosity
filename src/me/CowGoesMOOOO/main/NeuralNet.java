@@ -1,6 +1,6 @@
 package me.CowGoesMOOOO.main;
 
-import me.CowGoesMOOOO.helper.DimensionMismatchException;
+import me.CowGoesMOOOO.helper.exceptions.DimensionMismatchException;
 import me.CowGoesMOOOO.helper.Matrix;
 import me.CowGoesMOOOO.helper.MatrixMath;
 
@@ -20,11 +20,12 @@ public class NeuralNet {
      * @param layers Array with the amount of layers and simultaneously the amount of neurons in each layer
      */
     public NeuralNet(int[] layers) {
+
         this.layers = layers;
 
         //Creating all weight matrices
-        for(int i = 1, j = 0; i < layers.length; i++,j++){
-            Matrix mat = new Matrix(layers[i], layers[j]);
+        for(int a = 1,b = 0; a < layers.length; a++,b++){
+            Matrix mat = new Matrix(layers[a], layers[b]);
             weights.add(mat);
         }
 
@@ -44,12 +45,17 @@ public class NeuralNet {
      * @param batchSize Number of batches size (not currently used and just multiplied with the number of batches)
      * @param eta Learning constant
      */
-    public void train(Matrix x, Matrix y, int batches, int batchSize, double eta) throws DimensionMismatchException{
+    public void trainBackprop(Matrix x, Matrix y, int batches, int batchSize, double eta) throws DimensionMismatchException{
         Random rnd = new Random();
         for(int k = 0; k < batches; k++) {
             for (int i = 0; i < batchSize; i++) {
                 int n = rnd.nextInt(x.getRow());
-                backprop(x.getMatrix()[n], y.getMatrix()[n], eta);
+
+                try {
+                    backprop(x.getMatrix()[n], y.getMatrix()[n], eta);
+                }catch(DimensionMismatchException e){
+                    e.printStackTrace();
+                }
 
                 if(k % 500 == 0){
 
@@ -82,7 +88,7 @@ public class NeuralNet {
      * @param eta Learning constant
      * @return ArrayList of updated weight and biases values
      */
-    private ArrayList<ArrayList<Matrix>> backprop(double[] x, double[] y, double eta){
+    private ArrayList<ArrayList<Matrix>> backprop(double[] x, double[] y, double eta) throws DimensionMismatchException {
 
         ArrayList<Matrix> zs = new ArrayList<>();
         ArrayList<Matrix> activations = new ArrayList<>();
@@ -95,42 +101,42 @@ public class NeuralNet {
             nabla_w.add(i, null);
         }
 
-        /*Matrix xs = new Matrix(new double[x.length][1]);
+        Matrix xs = new Matrix(new double[x.length][1]);
 
         for(int i = 0; i < x.length; i++){
-            xs[i][0] = x[i];
-        }*/
+            xs.getMatrix()[i][0] = x[i];
+        }
 
         //Feedforword
-        double[][] z;
-        double[][] mat = xs;
+        Matrix z;
+        Matrix activation = xs;
         activations.add(0, xs);
         zs.add(null);
 
         for(int i = 1; i < layers.length; i++){
-            z = addBias(multiplyMatrices(weights.get(i-1), mat), biases.get(i-1));
-            mat = sigmoid(z);
-            activations.add(mat);
+            z = MatrixMath.matrixAdd(MatrixMath.dotProd(weights.get(i-1), activation), biases.get(i-1));
+            activation = sigmoid(z);
+            activations.add(activation);
             zs.add(i,z);
         }
 
         //Back pass
-        double[][] delta = haradman(cost_d(activations.get(layers.length - 1), y), dsigmoid(zs.get(layers.length-1)));
+        Matrix delta = MatrixMath.haradmanProd(cost_d(activations.get(layers.length - 1), y), dsigmoid(zs.get(layers.length-1)));
         nabla_b.add(layers.length - 1, delta);
-        nabla_w.add(layers.length - 1, multiplyMatrices(delta, transpose(activations.get(layers.length - 2))));
+        nabla_w.add(layers.length - 1, MatrixMath.dotProd(delta, MatrixMath.transpose(activations.get(layers.length - 2))));
 
         for(int i = 2; i < layers.length; i++){
-            double[][] zi = zs.get(layers.length-i);
-            double[][] sp = dsigmoid(zi);
+            Matrix zi = zs.get(layers.length-i);
+            Matrix sp = dsigmoid(zi);
 
-            delta = haradman(sp, multiplyMatrices(transpose(weights.get(layers.length-i)), delta));
+            delta = MatrixMath.haradmanProd(sp, MatrixMath.dotProd(MatrixMath.transpose(weights.get(layers.length-i)), delta));
             nabla_b.set(layers.length - i,delta);
-            nabla_w.set(layers.length - i, multiplyMatrices(delta, transpose(activations.get(layers.length-i-1))));
+            nabla_w.set(layers.length - i, MatrixMath.dotProd(delta, MatrixMath.transpose(activations.get(layers.length-i-1))));
         }
 
         for(int i = 0; i < weights.size(); i++){
-            weights.set(i, sub(weights.get(i), mul(nabla_w.get(i+1), eta)));
-            biases.set(i, sub(biases.get(i), mul(nabla_b.get(i+1), eta)));
+            weights.set(i, MatrixMath.matrixSub(weights.get(i), MatrixMath.multNumber(nabla_w.get(i+1), eta)));
+            biases.set(i, MatrixMath.matrixSub(biases.get(i), MatrixMath.multNumber(nabla_b.get(i+1), eta)));
         }
 
         ArrayList<ArrayList<Matrix>> result = new ArrayList<>();
@@ -179,5 +185,16 @@ public class NeuralNet {
             }
         }
         return x;
+    }
+
+    private Matrix cost_d(Matrix matrixA, double[] vectorB) throws DimensionMismatchException {
+        if(matrixA.getRow() != vectorB.length)
+            throw new DimensionMismatchException("Dimension of two matrices did not match while calculation the cost derivative!");
+        Matrix mat = new Matrix(matrixA.getRow(), matrixA.getColumn());
+
+        for(int i = 0; i < matrixA.getRow(); i++){
+            mat.getMatrix()[i][0] = (matrixA.getMatrix()[i][0] - vectorB[i]);
+        }
+        return mat;
     }
 }
