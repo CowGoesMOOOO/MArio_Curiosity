@@ -39,7 +39,7 @@ public class MatrixMath {
         if(matrixA.getColumn() != matrixB.getColumn() && matrixA.getRow() != matrixB.getRow())
             throw new DimensionMismatchException("The dimension of two matrices mismatched when trying to calculate the addition product!");
 
-        Matrix mat = new Matrix(matrixA.getColumn(), matrixB.getRow());
+        Matrix mat = new Matrix(matrixA.getRow(), matrixB.getColumn());
         for(int i = 0; i < mat.getRow(); i++){
             for(int j = 0; j < mat.getColumn(); j++){
                 mat.getMatrix()[i][j] = matrixA.getMatrix()[i][j] + matrixB.getMatrix()[i][j];
@@ -59,9 +59,9 @@ public class MatrixMath {
         if(matrixA.getColumn() != matrixB.getColumn() && matrixA.getRow() != matrixB.getRow())
             throw new DimensionMismatchException("The dimension of two matrices mismatched when trying to calculate the subtraction product!");
 
-        Matrix mat = new Matrix(matrixA.getColumn(), matrixB.getRow());
-        for(int i = 0; i < mat.getColumn(); i++){
-            for(int j = 0; j < mat.getRow(); j++){
+        Matrix mat = new Matrix(matrixA.getRow(), matrixB.getColumn());
+        for(int i = 0; i < mat.getRow(); i++){
+            for(int j = 0; j < mat.getColumn(); j++){
                 mat.getMatrix()[i][j] = matrixA.getMatrix()[i][j] - matrixB.getMatrix()[i][j];
             }
         }

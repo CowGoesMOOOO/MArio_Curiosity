@@ -55,6 +55,7 @@ public class NeuralNet {
                     backprop(x.getMatrix()[n], y.getMatrix()[n], eta);
                 }catch(DimensionMismatchException e){
                     e.printStackTrace();
+
                 }
 
                 if(k % 500 == 0){
@@ -77,6 +78,7 @@ public class NeuralNet {
                     System.out.println("------------------------------------------");
 
                 }
+
             }
         }
     }
@@ -155,7 +157,7 @@ public class NeuralNet {
         Matrix output = input;
         Matrix z;
         for(int i = 1; i < layers.length; i++){
-            z = MatrixMath.matrixAdd(MatrixMath.dotProd(weights.get(i-1), input), biases.get(i-1));
+            z = MatrixMath.matrixAdd(MatrixMath.dotProd(weights.get(i-1), output), biases.get(i-1));
             output = sigmoid(z);
         }
         return output;
