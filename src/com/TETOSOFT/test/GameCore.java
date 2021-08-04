@@ -9,7 +9,7 @@ import com.TETOSOFT.graphics.ScreenManager;
     Simple abstract class used for testing. Subclasses should
     implement the draw() method.
 */
-public abstract class GameCore {
+public abstract class GameCore implements Runnable{
 
     protected static final int FONT_SIZE = 18;
 
@@ -40,6 +40,7 @@ public abstract class GameCore {
     /**
         Calls init() and gameLoop()
     */
+    @Override
     public void run() {
         try {
             init();
@@ -136,6 +137,10 @@ public abstract class GameCore {
     */
     public void update(long elapsedTime) {
         // do nothing
+    }
+
+    public boolean isRunning(){
+        return isRunning;
     }
 
 

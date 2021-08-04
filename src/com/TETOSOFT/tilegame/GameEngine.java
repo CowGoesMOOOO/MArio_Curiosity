@@ -2,22 +2,18 @@ package com.TETOSOFT.tilegame;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import com.TETOSOFT.graphics.*;
 import com.TETOSOFT.input.*;
 import com.TETOSOFT.test.GameCore;
 import com.TETOSOFT.tilegame.sprites.*;
-import me.CowGoesMOOOO.helper.Matrix;
-import me.CowGoesMOOOO.helper.MatrixMath;
-import me.CowGoesMOOOO.helper.exceptions.DimensionMismatchException;
-import me.CowGoesMOOOO.main.NeuralNet;
+import me.CowGoesMOOOO.main.Organizer;
 
 /**
  * GameManager manages all parts of the game.
  */
-public class GameEngine extends GameCore 
+public class GameEngine extends GameCore
 {
     
     public static final float GRAVITY = 0.002f;
@@ -27,6 +23,7 @@ public class GameEngine extends GameCore
     private MapLoader mapLoader;
     private InputManager inputManager;
     private TileMapDrawer drawer;
+    private static GameEngine gameEngine;
     
     private GameAction moveLeft;
     private GameAction moveRight;
@@ -36,9 +33,17 @@ public class GameEngine extends GameCore
     private int numLives=6;
 
     public static void main(String[] args){
-        //new GameEngine().run();
 
-        int[] layers = new int[]{4,20,10,2};
+        GameEngine game = new GameEngine();
+        gameEngine = game;
+        Thread gameThread = new Thread(game);
+        gameThread.start();
+
+        Organizer organizer = new Organizer();
+        Thread organizerThread = new Thread(organizer);
+        organizerThread.start();
+
+        /*int[] layers = new int[]{4,20,10,2};
 
         NeuralNet nn = new NeuralNet(layers);
 
@@ -117,6 +122,8 @@ public class GameEngine extends GameCore
         }catch(DimensionMismatchException e){
             e.printStackTrace();
         }
+
+         */
     }
 
     public void init()
@@ -471,6 +478,10 @@ public class GameEngine extends GameCore
             map = mapLoader.loadNextMap();
             
         }
+    }
+
+    public static GameEngine getInstance(){
+        return gameEngine;
     }
     
       
