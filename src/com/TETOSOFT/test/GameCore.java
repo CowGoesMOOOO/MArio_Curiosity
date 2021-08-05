@@ -149,4 +149,8 @@ public abstract class GameCore implements Runnable{
         method.
     */
     public abstract void draw(Graphics2D g);
+
+    public ScreenManager getScreen() {
+        return screen;
+    }
 }

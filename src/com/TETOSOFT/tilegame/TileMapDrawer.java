@@ -109,6 +109,7 @@ public class TileMapDrawer
             int y = screenHeight - background.getHeight(null);
 
             g.drawImage(background, x, y, null);
+            g.setColor(Color.RED);
         
         }
 
@@ -123,8 +124,7 @@ public class TileMapDrawer
                     g.drawImage(image,
                         tilesToPixels(x) + offsetX,
                         tilesToPixels(y) + offsetY,
-                        null);
-                }
+                        null);}
             }
         }
 

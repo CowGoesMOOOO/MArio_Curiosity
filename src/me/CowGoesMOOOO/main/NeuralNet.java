@@ -13,6 +13,8 @@ public class NeuralNet {
     private final ArrayList<Matrix> weights = new ArrayList<>();
     private final ArrayList<Matrix> biases = new ArrayList<>();
 
+    private final double eta = 0.04;
+
     private final int[] layers;
 
     /**
@@ -41,56 +43,19 @@ public class NeuralNet {
      * Uncompleted but functional training method using backpropagation and gradient descent
      * @param x Dataset input
      * @param y Correct dataset
-     * @param batches Number of batches
-     * @param batchSize Number of batches size (not currently used and just multiplied with the number of batches)
-     * @param eta Learning constant
      */
-    public void trainBackprop(Matrix x, Matrix y, int batches, int batchSize, double eta) throws DimensionMismatchException{
-        Random rnd = new Random();
-        for(int k = 0; k < batches; k++) {
-            for (int i = 0; i < batchSize; i++) {
-                int n = rnd.nextInt(x.getRow());
-
-                try {
-                    backprop(x.getMatrix()[n], y.getMatrix()[n], eta);
-                }catch(DimensionMismatchException e){
-                    e.printStackTrace();
-
-                }
-
-                if(k % 500 == 0){
-
-                    double[][] ma = {{0},{1},{0},{1}};
-                    double[][] mb = {{1},{0},{1},{0}};
-                    double[][] mc = {{0},{0},{1},{1}};
-                    double[][] md = {{0},{0},{0},{1}};
-
-                    Matrix a = new Matrix(ma);
-                    Matrix b = new Matrix(mb);
-                    Matrix c = new Matrix(mc);
-                    Matrix d = new Matrix(md);
-
-                    System.out.println("------------------------------------------");
-                    System.out.println("Expected to be a {1,1} {0,1,0,1}: " + Arrays.deepToString(predict(a).getMatrix()));
-                    System.out.println("Expected to be a {1,0} {1,0,1,0}: " + Arrays.deepToString(predict(b).getMatrix()));
-                    System.out.println("Expected to be a {0,0} {0,0,1,1}: "+ Arrays.deepToString(predict(c).getMatrix()));
-                    System.out.println("Expected to be a {0,1} {0,0,0,1}: " + Arrays.deepToString(predict(d).getMatrix()));
-                    System.out.println("------------------------------------------");
-
-                }
-
-            }
-        }
+    public void trainBackprop(Matrix x, Matrix y) throws DimensionMismatchException{
+        backprop(x,y,eta);
     }
 
     /**
      * Backpropagation used in combination with gradient descent
-     * @param x Dataset input
+     * @param xs Dataset input
      * @param y Correct output
      * @param eta Learning constant
      * @return ArrayList of updated weight and biases values
      */
-    private ArrayList<ArrayList<Matrix>> backprop(double[] x, double[] y, double eta) throws DimensionMismatchException {
+    private ArrayList<ArrayList<Matrix>> backprop(Matrix xs, Matrix y, double eta) throws DimensionMismatchException {
 
         ArrayList<Matrix> zs = new ArrayList<>();
         ArrayList<Matrix> activations = new ArrayList<>();
@@ -101,12 +66,6 @@ public class NeuralNet {
         for(int i = 0; i < this.weights.size(); i++){
             nabla_b.add(i, null);
             nabla_w.add(i, null);
-        }
-
-        Matrix xs = new Matrix(new double[x.length][1]);
-
-        for(int i = 0; i < x.length; i++){
-            xs.getMatrix()[i][0] = x[i];
         }
 
         //Feedforword
@@ -189,13 +148,13 @@ public class NeuralNet {
         return x;
     }
 
-    private Matrix cost_d(Matrix matrixA, double[] vectorB) throws DimensionMismatchException {
-        if(matrixA.getRow() != vectorB.length)
+    private Matrix cost_d(Matrix matrixA, Matrix matrixB) throws DimensionMismatchException {
+        if(matrixA.getRow() != matrixB.getRow())
             throw new DimensionMismatchException("Dimension of two matrices did not match while calculation the cost derivative!");
         Matrix mat = new Matrix(matrixA.getRow(), matrixA.getColumn());
 
         for(int i = 0; i < matrixA.getRow(); i++){
-            mat.getMatrix()[i][0] = (matrixA.getMatrix()[i][0] - vectorB[i]);
+            mat.getMatrix()[i][0] = (matrixA.getMatrix()[i][0] - matrixB.getMatrix()[i][0]);
         }
         return mat;
     }
