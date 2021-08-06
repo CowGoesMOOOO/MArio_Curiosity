@@ -9,16 +9,15 @@ import me.CowGoesMOOOO.helper.Matrix;
 import me.CowGoesMOOOO.helper.exceptions.DimensionMismatchException;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.Iterator;
+import java.util.Random;
 
 public class Organizer implements Runnable {
 
-    private NeuralNet dummyNet;
-    private NeuralNet network;
-    private NeuralNet actionNet;
-
-    private int screenWidth;
-    private int screenHeight;
+    private final NeuralNet dummyNet;
+    private final NeuralNet network;
+    private final NeuralNet actionNet;
 
     public Organizer(){
         dummyNet = new NeuralNet(new int[]{81,120,70,60,81});
@@ -29,57 +28,93 @@ public class Organizer implements Runnable {
     @Override
     public void run() {
         GameEngine engine = GameEngine.getInstance();
-        screenWidth = engine.getScreen().getWidth();
-        screenHeight = engine.getScreen().getHeight();
 
         while(engine.isRunning()){
             TileMap map = engine.getMap();
             Player player = (Player)map.getPlayer();
 
-            float playerX = player.getX();
-            float playerY = player.getY();
-
-            int mapWidth = TileMapDrawer.tilesToPixels(map.getWidth());
-
-            int offsetX = screenWidth / 2 -
-                    Math.round(player.getX()) - 64;
-            offsetX = Math.min(offsetX, 0);
-            offsetX = Math.max(offsetX, screenWidth - mapWidth);
-            int offsetY = screenHeight -
-                    TileMapDrawer.tilesToPixels(map.getHeight());
-
-            int firstTileX = TileMapDrawer.pixelsToTiles(-offsetX);
-            int lastTileX = firstTileX +
-                    TileMapDrawer.pixelsToTiles(screenWidth) + 1;
+            int tilePlayerX = TileMapDrawer.pixelsToTiles(player.getX());
+            int tilePlayerY = TileMapDrawer.pixelsToTiles(player.getY());
 
             //Initializing the map into a matrix
             Matrix mapMatrix = new Matrix(81, 1);
+            int counter = 0;
 
-            for (int y=0; y<map.getHeight(); y++) {
-                for (int x=firstTileX; x <= lastTileX; x++) {
+            for (int y=Math.round(tilePlayerY) - 4; y <=  Math.round(tilePlayerY) + 4; y++) {
+                for (int x=Math.round(tilePlayerX) - 4; x <= Math.round(tilePlayerX) + 4; x++) {
+
                     Image image = map.getTile(x, y);
+
                     if (image != null) {
-                        mapMatrix.getMatrix()[x+(y*9)][0] = 1;
+                        mapMatrix.getMatrix()[counter][0] = 1;
                     } else {
-                        mapMatrix.getMatrix()[x+(y*9)][0] = 0;
+                        mapMatrix.getMatrix()[counter][0] = 0;
                     }
+
+                    Iterator i = map.getSprites();
+                    while(i.hasNext()){
+                        Sprite next = (Sprite)i.next();
+                        if(next.getX() == x && next.getY() == y){
+                            mapMatrix.getMatrix()[counter][0] =-0.5;
+                        }
+                    }
+
+                    counter++;
                 }
             }
 
-            //Initializing the sprites into the matrix
-            Iterator iterator = map.getSprites();
-            while(iterator.hasNext()){
-                Sprite sprite = (Sprite)iterator.next();
-                int x = Math.round(sprite.getX()) + offsetX;
-                int y = Math.round(sprite.getY()) + offsetY;
-                mapMatrix.getMatrix()[x+(y*9)][0] = -1;
-            }
-
+            // Neural Network stuff
             try {
+                Matrix actionMatrix = actionNet.predict(mapMatrix);
+                double[][] actions = actionMatrix.getMatrix();
+                Robot robot = new Robot();
+
+                if(actions[0][0] > actions[1][0] && actions[0][0] > actions[2][0]){
+                    robot.keyPress(KeyEvent.VK_RIGHT);
+                    robot.keyRelease(KeyEvent.VK_RIGHT);
+                } else if(actions[0][0] < actions[1][0] && actions[0][0] >= actions[2][0]){
+                    robot.keyPress(KeyEvent.VK_LEFT);
+                    robot.keyRelease(KeyEvent.VK_LEFT);
+                } else if(actions[0][0] < actions[1][0] && actions[1][0] < actions[2][0]){
+                    robot.keyPress(KeyEvent.VK_SPACE);
+                    robot.keyRelease(KeyEvent.VK_SPACE);
+                } else {
+                    System.out.println("random move");
+                    switch(new Random().nextInt(2)){
+                        case 0:
+                            robot.keyPress(KeyEvent.VK_RIGHT);
+                            robot.keyRelease(KeyEvent.VK_RIGHT);
+                            break;
+                        case 1:
+                            robot.keyPress(KeyEvent.VK_LEFT);
+                            robot.keyRelease(KeyEvent.VK_LEFT);
+                            break;
+                        case 2:
+                            robot.keyPress(KeyEvent.VK_SPACE);
+                            robot.keyRelease(KeyEvent.VK_SPACE);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
                 Matrix passThrough = dummyNet.predict(mapMatrix);
-                network.trainBackprop(network.predict(mapMatrix), passThrough);
-                
-            }catch (DimensionMismatchException e){
+                Matrix predictedMatrix = network.predict(mapMatrix);
+                network.trainBackprop(mapMatrix, passThrough);
+
+                double difference = 0;
+
+                for(int i = 0; i < passThrough.getRow(); i++){
+                    double d = passThrough.getMatrix()[i][0] + predictedMatrix.getMatrix()[i][0];
+                    if(d < 0){
+                        d *= -1;
+                    }
+                    difference += d;
+                }
+
+                // todo: actionNet train with d
+
+            }catch (DimensionMismatchException | AWTException e){
                 e.printStackTrace();
             }
 

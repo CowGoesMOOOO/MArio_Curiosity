@@ -32,7 +32,7 @@ public class GameEngine extends GameCore
     private int collectedStars=0;
     private int numLives=6;
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws InterruptedException {
 
         GameEngine game = new GameEngine();
         gameEngine = game;
@@ -41,89 +41,8 @@ public class GameEngine extends GameCore
 
         Organizer organizer = new Organizer();
         Thread organizerThread = new Thread(organizer);
+        Thread.sleep(2000);
         organizerThread.start();
-
-        /*int[] layers = new int[]{4,20,10,2};
-
-        NeuralNet nn = new NeuralNet(layers);
-
-        System.out.println("Starting a Neural Network with Layers: " + Arrays.toString(layers));
-
-        double[][] inputs = {
-                {0,0,0,0},
-                {0,0,0,1},
-                {0,0,1,0},
-                {0,0,1,1},
-                {0,1,0,0},
-                {0,1,0,1},
-                {0,1,1,0},
-                {0,1,1,1},
-                {1,0,0,0},
-                {1,0,0,1},
-                {1,0,1,0},
-                {1,0,1,1},
-                {1,1,0,0},
-                {1,1,0,1},
-                {1,1,1,1}
-        };
-
-        double[][] outputs = {
-                {0,0},
-                {0,1},
-                {0,1},
-                {0,0},
-                {1,0},
-                {1,1},
-                {1,1},
-                {1,0},
-                {1,0},
-                {1,1},
-                {1,1},
-                {1,0},
-                {0,0},
-                {0,1},
-                {0,0}
-        };
-
-        double[][] x = {{0},{1},{0},{1}};
-        double[][] y = {{1},{0},{1},{1}};
-        double[][] z = {{0},{0},{1},{1}};
-        double[][] w = {{0},{1},{0},{0}};
-
-        Matrix input = new Matrix(inputs);
-        Matrix output = new Matrix(outputs);
-        Matrix a = new Matrix(x);
-        Matrix b = new Matrix(y);
-        Matrix c = new Matrix(z);
-        Matrix d = new Matrix(w);
-
-        try {
-            System.out.println("----------------------------------");
-            System.out.println("Neural Network: Learning two XOR gates");
-            System.out.println("----------------------------------");
-
-            System.out.println("Expected to be a {1,1} {0,1,0,1}: " + Arrays.deepToString(nn.predict(a).getMatrix()));
-            System.out.println("Expected to be a {1,0} {1,0,1,0}: " + Arrays.deepToString(nn.predict(b).getMatrix()));
-            System.out.println("Expected to be a {0,0} {0,0,1,1}: " + Arrays.deepToString(nn.predict(c).getMatrix()));
-            System.out.println("Expected to be a {1,0} {0,1,0,0}: " + Arrays.deepToString(nn.predict(d).getMatrix()));
-
-            System.out.println("----------------------------------");
-            System.out.println("Training in process, executing 100000 batches!");
-            System.out.println("----------------------------------");
-
-            nn.trainBackprop(input, output, 500000, 1, 0.04);
-
-            System.out.println("Expected to be a {1,1} {0,1,0,1}: " + Arrays.deepToString(nn.predict(a).getMatrix()));
-            System.out.println("Expected to be a {1,0} {1,0,1,1}: " + Arrays.deepToString(nn.predict(b).getMatrix()));
-            System.out.println("Expected to be a {0,0} {0,0,1,1}: " + Arrays.deepToString(nn.predict(c).getMatrix()));
-            System.out.println("Expected to be a {1,0} {0,1,0,0}: " + Arrays.deepToString(nn.predict(d).getMatrix()));
-
-            System.out.println("----------------------------------");
-        }catch(DimensionMismatchException e){
-            e.printStackTrace();
-        }
-
-         */
     }
 
     public void init()
