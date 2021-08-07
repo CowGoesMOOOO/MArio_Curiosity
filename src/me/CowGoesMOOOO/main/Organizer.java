@@ -6,10 +6,12 @@ import com.TETOSOFT.tilegame.TileMap;
 import com.TETOSOFT.tilegame.TileMapDrawer;
 import com.TETOSOFT.tilegame.sprites.Player;
 import me.CowGoesMOOOO.helper.Matrix;
+import me.CowGoesMOOOO.helper.MatrixMath;
 import me.CowGoesMOOOO.helper.exceptions.DimensionMismatchException;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
 
@@ -18,6 +20,8 @@ public class Organizer implements Runnable {
     private final NeuralNet dummyNet;
     private final NeuralNet network;
     private final NeuralNet actionNet;
+
+    private final double phi = 0.5;
 
     public Organizer(){
         dummyNet = new NeuralNet(new int[]{81,120,70,60,81});
@@ -38,17 +42,17 @@ public class Organizer implements Runnable {
 
             //Initializing the map into a matrix
             Matrix mapMatrix = new Matrix(81, 1);
-            int counter = 0;
+             int counter = 0;
 
-            for (int y=Math.round(tilePlayerY) - 4; y <=  Math.round(tilePlayerY) + 4; y++) {
+            for (int y=Math.round(tilePlayerY) - 4; y <  Math.round(tilePlayerY) + 4; y++) {
                 for (int x=Math.round(tilePlayerX) - 4; x <= Math.round(tilePlayerX) + 4; x++) {
 
                     Image image = map.getTile(x, y);
 
                     if (image != null) {
-                        mapMatrix.getMatrix()[counter][0] = 1;
-                    } else {
                         mapMatrix.getMatrix()[counter][0] = 0;
+                    } else {
+                        mapMatrix.getMatrix()[counter][0] = 1;
                     }
 
                     Iterator i = map.getSprites();
@@ -67,15 +71,18 @@ public class Organizer implements Runnable {
             try {
                 Matrix actionMatrix = actionNet.predict(mapMatrix);
                 double[][] actions = actionMatrix.getMatrix();
+                int index = 0;
                 Robot robot = new Robot();
 
                 if(actions[0][0] > actions[1][0] && actions[0][0] > actions[2][0]){
                     robot.keyPress(KeyEvent.VK_RIGHT);
                     robot.keyRelease(KeyEvent.VK_RIGHT);
                 } else if(actions[0][0] < actions[1][0] && actions[0][0] >= actions[2][0]){
+                    index = 1;
                     robot.keyPress(KeyEvent.VK_LEFT);
                     robot.keyRelease(KeyEvent.VK_LEFT);
                 } else if(actions[0][0] < actions[1][0] && actions[1][0] < actions[2][0]){
+                    index = 2;
                     robot.keyPress(KeyEvent.VK_SPACE);
                     robot.keyRelease(KeyEvent.VK_SPACE);
                 } else {
@@ -102,18 +109,27 @@ public class Organizer implements Runnable {
                 Matrix predictedMatrix = network.predict(mapMatrix);
                 network.trainBackprop(mapMatrix, passThrough);
 
-                double difference = 0;
+                double reward = 0;
 
                 for(int i = 0; i < passThrough.getRow(); i++){
                     double d = passThrough.getMatrix()[i][0] + predictedMatrix.getMatrix()[i][0];
                     if(d < 0){
                         d *= -1;
                     }
-                    difference += d;
+                    reward += Math.sqrt(d);
                 }
 
-                // todo: actionNet train with d
 
+                Matrix qMatrix = new Matrix(actionMatrix.getRow(), actionMatrix.getColumn());
+                for(int i = 0; i < qMatrix.getRow(); i++){
+                    if(i == index){
+                        qMatrix.getMatrix()[i][0] = 1;
+                    } else {
+                        qMatrix.getMatrix()[i][0] = 0;
+                    }
+                }
+                Matrix loss = MatrixMath.matrixSub(MatrixMath.addNumber(MatrixMath.multNumber(qMatrix, phi), reward), actionMatrix);
+                actionNet.trainBackprop(mapMatrix , loss);
             }catch (DimensionMismatchException | AWTException e){
                 e.printStackTrace();
             }

@@ -120,6 +120,17 @@ public class MatrixMath {
         return mat;
     }
 
+    public static Matrix addNumber(Matrix matrixA, double d){
+        Matrix mat = matrixA;
+        for(int i = 0; i < matrixA.getRow(); i++){
+            for(int j = 0; j < matrixA.getColumn(); j++){
+                mat.getMatrix()[i][j] += d;
+            }
+        }
+        return mat;
+    }
+
+
 
 
 }

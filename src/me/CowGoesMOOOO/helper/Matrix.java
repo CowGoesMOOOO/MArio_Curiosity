@@ -16,12 +16,6 @@ public class Matrix {
         fillGaussian();
     }
 
-    public Matrix(double[][] mat){
-        this.column = mat[0].length;
-        this.row = mat.length;
-        this.mat = mat;
-    }
-
     public void fillGaussian(){
         Random rnd = new Random();
         for(int i = 0; i < row; i++){

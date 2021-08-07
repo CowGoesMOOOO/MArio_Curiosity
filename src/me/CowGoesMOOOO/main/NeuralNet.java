@@ -70,7 +70,7 @@ public class NeuralNet {
 
         //Feedforword
         Matrix z;
-        Matrix activation = xs;
+         Matrix activation = xs;
         activations.add(0, xs);
         zs.add(null);
 
