@@ -15,7 +15,7 @@ import com.TETOSOFT.tilegame.sprites.*;
     "host" Sprites used in the game. Game Sprites are cloned from
     "host" Sprites.
 */
-public class MapLoader 
+public class  MapLoader
 {
     private ArrayList tiles;
     public int currentMap;
@@ -178,10 +178,10 @@ public class MapLoader
                     addSprite(newMap, goalSprite, x, y);
                 }
                 else if (ch == '1') {
-                    addSprite(newMap, grubSprite, x, y);
+                    /*SPRITE */ //addSprite(newMap, grubSprite, x, y);
                 }
                 else if (ch == '2') {
-                    addSprite(newMap, flySprite, x, y);
+                    /*SPRITE*/ //addSprite(newMap, flySprite, x, y);
                 }
             }
         }

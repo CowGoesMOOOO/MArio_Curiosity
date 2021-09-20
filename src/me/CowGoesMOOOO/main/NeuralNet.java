@@ -13,7 +13,7 @@ public class NeuralNet {
     private final ArrayList<Matrix> weights = new ArrayList<>();
     private final ArrayList<Matrix> biases = new ArrayList<>();
 
-    private final double eta = 0.04;
+    private final double eta = 0.2;
 
     private final int[] layers;
 
@@ -25,13 +25,13 @@ public class NeuralNet {
 
         this.layers = layers;
 
-        //Creating all weight matrices
+        //Cr eati ng all weight matrices
         for(int a = 1,b = 0; a < layers.length; a++,b++){
             Matrix mat = new Matrix(layers[a], layers[b]);
             weights.add(mat);
         }
 
-        //Creating all biases vectors
+        //Creating all biases vectors   
         for(int i = 1; i < layers.length; i++){
             Matrix mat = new Matrix(layers[i], 1);
             biases.add(mat);
