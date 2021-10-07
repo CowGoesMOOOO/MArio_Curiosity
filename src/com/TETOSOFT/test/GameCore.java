@@ -48,7 +48,7 @@ public abstract class GameCore implements Runnable{
         }
         finally {
             screen.restoreScreen();
-            lazilyExit();
+            //lazilyExit();
         }
     }
 

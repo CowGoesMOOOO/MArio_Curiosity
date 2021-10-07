@@ -13,7 +13,7 @@ public class NeuralNet {
     private final ArrayList<Matrix> weights = new ArrayList<>();
     private final ArrayList<Matrix> biases = new ArrayList<>();
 
-    private final double eta = 0.2;
+    private final double eta = 0.3;
 
     private final int[] layers;
 

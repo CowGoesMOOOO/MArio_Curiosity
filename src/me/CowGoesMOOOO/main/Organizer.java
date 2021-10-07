@@ -28,10 +28,17 @@ public class Organizer implements Runnable {
     private float highestX;
     private int currentState;
     private GameEngine engine;
+
     public Organizer(){
+        dummyNet = new NeuralNet(new int[]{25,120,200,300,100,25});
+        network = new NeuralNet(new int[]{25,120,200,300,100,25});
+        qMatrix = new QMatrix(3, 3, 0.2,0.7);
+    }
+
+    public Organizer(double learningRate, double gamma){
         dummyNet = new NeuralNet(new int[]{25,120,70,60,25});
         network = new NeuralNet(new int[]{25,120,70,60,25});
-        qMatrix = new QMatrix(3, 3, 0.97, 0.125);
+        qMatrix = new QMatrix(3, 3, learningRate,gamma);
     }
 
     @Override
@@ -43,13 +50,9 @@ public class Organizer implements Runnable {
 
             // Neural Network stuff
             try{
-                if(playerThreat()){
-                    currentState = 2;
-                }
-                currentState = 1;
-
-                if(first) {
-                    first = false;
+                if(inFrontOfBlock()){
+                    currentState = 1;
+                } else {
                     currentState = 0;
                 }
 
@@ -97,23 +100,22 @@ public class Organizer implements Runnable {
                 network.trainBackprop(mapMatrix, passThrough);
 
                 double ireward = 0;
-
                 Matrix rewardMatrix = MatrixMath.matrixSub(passThrough, predictedMatrix);
                 for(int i = 0; i < rewardMatrix.getRow(); i++) {
-                    ireward += rewardMatrix.getMatrix()[i][0]*rewardMatrix.getMatrix()[i][0];
+                    ireward += rewardMatrix.getMatrix()[i][0] * rewardMatrix.getMatrix()[i][0];
                 }
-                int nextState = playerThreat() == true ? 2 : 1;
 
                 float playerX = engine.getMap().getPlayer().getX();
                 double ereward = (playerX - highestX);
-                if(playerX > highestX){
-                    highestX = playerX;
-                }
 
-                qMatrix.train(currentState, nextState, a.getNumber(), ereward + ireward);
+                if(highestX < playerX)
+                    highestX = playerX;
+                int nextState = inFrontOfBlock() == true ? 1 : 0;
+
+                System.out.println(currentState);
+                System.out.println(ireward + ", " + ereward);
                 System.out.println(Arrays.deepToString(qMatrix.getMatrix().getMatrix()));
-                /* Matrix loss = MatrixMath.matrixAdd((MatrixMath.matrixAdd(reward, MatrixMath.multNumber(actionMatrix,phi))), qMatrix);                                         ;
-                actionNet.trainBackprop(mapMatrix , loss); */
+                qMatrix.train(currentState, nextState, a.getNumber(), ireward + ereward/10);
             }catch (DimensionMismatchException | AWTException e){
                 e.printStackTrace();
              }
@@ -140,16 +142,8 @@ public class Organizer implements Runnable {
                     mapMatrix.getMatrix()[counter][0] = 1;
                 }
 
-                Iterator i = map.getSprites();
-                while(i.hasNext()){
-                    Sprite next = (Sprite)i.next();
-                    if(Math.round(next.getX()) == x && Math.round(next.getY()) == y){
-                        mapMatrix.getMatrix()[counter][0] = 0.5;
-                    }
-                }
-
-                if(y == Math.round(tilePlayerY) && x == Math.round(tilePlayerX))
-                    mapMatrix.getMatrix()[counter][0] = 2;
+                if(y == tilePlayerY && x == tilePlayerX)
+                    mapMatrix.getMatrix()[counter][0] = -1;
 
                 counter++;
             }
@@ -157,13 +151,17 @@ public class Organizer implements Runnable {
         return mapMatrix;
     }
 
-    private boolean playerThreat(){
-        Matrix map = createMapMatrix();
-        for(int i = 0; i < map.getRow(); i++){
-            if(map.getMatrix()[i][0] == 0.5)
-                return true;
+    public boolean inFrontOfBlock(){
+        Player player = (Player)engine.getMap().getPlayer();
+        int tilePlayerX = TileMapDrawer.pixelsToTiles(player.getX());
+        int tilePlayerY = TileMapDrawer.pixelsToTiles(player.getY());
+        int newX = tilePlayerX - 1;
+        int new2X = tilePlayerX + 1;
+        Image img1 = engine.getMap().getTile(newX, tilePlayerY);
+        Image img3 = engine.getMap().getTile(new2X, tilePlayerY);
+        if(img1 != null || img3 != null){
+            return true;
         }
         return false;
     }
-
 }

@@ -2,12 +2,16 @@ package com.TETOSOFT.tilegame;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import com.TETOSOFT.graphics.*;
 import com.TETOSOFT.input.*;
 import com.TETOSOFT.test.GameCore;
 import com.TETOSOFT.tilegame.sprites.*;
+import me.CowGoesMOOOO.helper.TimerThread;
+import me.CowGoesMOOOO.main.NeuralNet;
 import me.CowGoesMOOOO.main.Organizer;
 
 /**
@@ -17,14 +21,17 @@ public class GameEngine extends GameCore
 {
     
     public static final float GRAVITY = 0.002f;
-    
+
     private Point pointCache = new Point();
     private TileMap map;
     private MapLoader mapLoader;
+    private static int mapCount;
     private InputManager inputManager;
     private TileMapDrawer drawer;
-    private static GameEngine gameEngine;
-    
+    public static GameEngine gameEngine;
+    public static Thread gameThread;
+    public static Thread organizerThread;
+
     private GameAction moveLeft;
     private GameAction moveRight;
     private GameAction jump;
@@ -33,21 +40,21 @@ public class GameEngine extends GameCore
     private int numLives=6;
 
     public static void main(String[] args) throws InterruptedException {
+       TimerThread t = new TimerThread(10,300);
+       Thread thread = new Thread(t);
+       thread.start();
 
-        GameEngine game = new GameEngine();
-        gameEngine = game;
-        Thread gameThread = new Thread(game);
-        gameThread.start();
 
-        Organizer organizer = new Organizer();
-        Thread organizerThread = new Thread(organizer);
-        Thread.sleep(2000);
-        organizerThread.start();
+        /*gameEngine = new GameEngine();
+        Thread t = new Thread(gameEngine);
+        t.start();*/
     }
 
     public void init()
     {
         super.init();
+
+        mapCount = 0;
         
         // set up input manager
         initInput();
@@ -393,10 +400,31 @@ public class GameEngine extends GameCore
             
         } else if (powerUp instanceof PowerUp.Goal) {
             // advance to next map      
-      
+            mapCount++;
             map = mapLoader.loadNextMap();
+            //FINISH RUNS AND EXPORT DATA
             
         }
+    }
+
+    public static void start(double learningRate, double gamma){
+        GameEngine game = new GameEngine();
+        gameEngine = game;
+        gameThread = new Thread(game);
+        gameThread.start();
+
+        Organizer organizer = new Organizer();
+        organizerThread = new Thread(organizer);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        organizerThread.start();
+    }
+
+    public static int getMapCount() {
+        return mapCount;
     }
 
     public static GameEngine getInstance(){

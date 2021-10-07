@@ -8,16 +8,33 @@ public class QMatrix {
     private double discountRate;
     private Matrix mat;
 
+    /**
+     * Creates the qMatrix object
+     * @param states The amount of states the player can have
+     * @param actions The amount of actions the player can perform
+     *
+     */
     public QMatrix(int states, int actions, double learningRate, double discountRate){
         mat = new Matrix(states, actions, false);
         this.learningRate = learningRate;
         this.discountRate = discountRate;
     }
 
+    /**
+     * Returns the matrix of the object
+     * @return Matrix
+     */
     public Matrix getMatrix() {
         return mat;
     }
 
+    /**
+     * Recalculates the qValue of the current State and action
+     * @param currentState The current state the player is in
+     * @param nextState The next state the player will be in
+     * @param action The performed action of the player
+     * @param reward The gained reward of the player
+     */
     public void train(int currentState, int nextState, int action, double reward){
         double qValue = this.mat.getMatrix()[currentState][action];
         double firstFactor = (1-learningRate)*qValue;

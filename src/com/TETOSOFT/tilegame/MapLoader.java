@@ -95,6 +95,9 @@ public class  MapLoader
         while (map == null) 
         {
             currentMap++;
+            if(currentMap == 5){
+                currentMap = 0;
+            }
             try {
                 map = loadMap(
                     "maps/map" + currentMap + ".txt");
