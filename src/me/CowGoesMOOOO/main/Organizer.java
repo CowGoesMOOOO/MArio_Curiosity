@@ -118,7 +118,7 @@ public class Organizer implements Runnable {
                 System.out.println(currentState);
                 System.out.println(ireward + ", " + ereward);
                 System.out.println(Arrays.deepToString(qMatrix.getMatrix().getMatrix()));
-                  //qMatrix.train(currentState, nextState, a.getNumber(), ireward + ereward/10);
+                qMatrix.train(currentState, nextState, a.getNumber(), ireward + ereward/10);
             }catch (DimensionMismatchException | AWTException e){
                 e.printStackTrace();
              }
