@@ -25,7 +25,7 @@ public class NeuralNet {
 
         this.layers = layers;
 
-        //Cr eati ng all weight matrices
+        //Creating all weight matrices
         for(int a = 1,b = 0; a < layers.length; a++,b++){
             Matrix mat = new Matrix(layers[a], layers[b]);
             weights.add(mat);
@@ -37,7 +37,7 @@ public class NeuralNet {
             biases.add(mat);
         }
 
-    }
+        }
 
     /**
      * Uncompleted but functional training method using backpropagation and gradient descent
@@ -56,7 +56,6 @@ public class NeuralNet {
      * @return ArrayList of updated weight and biases values
      */
     private ArrayList<ArrayList<Matrix>> backprop(Matrix xs, Matrix y, double eta) throws DimensionMismatchException {
-
         ArrayList<Matrix> zs = new ArrayList<>();
         ArrayList<Matrix> activations = new ArrayList<>();
 

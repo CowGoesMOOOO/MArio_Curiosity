@@ -39,7 +39,7 @@ public class GameEngine extends GameCore
     private int collectedStars=0;
     private int numLives=6;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
        TimerThread t = new TimerThread(10,300);
        Thread thread = new Thread(t);
        thread.start();
@@ -401,6 +401,8 @@ public class GameEngine extends GameCore
         } else if (powerUp instanceof PowerUp.Goal) {
             // advance to next map      
             mapCount++;
+            Organizer.ranX += Organizer.highestX;
+            Organizer.highestX = 0;
             map = mapLoader.loadNextMap();
             //FINISH RUNS AND EXPORT DATA
             

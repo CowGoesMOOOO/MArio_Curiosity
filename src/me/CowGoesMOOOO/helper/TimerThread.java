@@ -1,6 +1,7 @@
 package me.CowGoesMOOOO.helper;
 
 import com.TETOSOFT.tilegame.GameEngine;
+import me.CowGoesMOOOO.main.Organizer;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -36,6 +37,7 @@ public class TimerThread implements Runnable{
                 boolean running = true;
                 while (running) {
                     if (seconds >= secondsPerRound) {
+                        a.add((int)(Organizer.highestX + Organizer.ranX));
                         a.add(GameEngine.getMapCount());
                         GameEngine.gameEngine.stop();
                         try {
@@ -63,17 +65,12 @@ public class TimerThread implements Runnable{
     }
 
     public void writeToFile(ArrayList<Integer> a, double learningRate, double gamma, int fileCount) throws IOException {
-        File f = new File("C:\\Users\\Yanick$\\Desktop\\MArio.txt");
-        if (!f.exists()) {
-            f.createNewFile();
-        }
-        BufferedWriter w = new BufferedWriter(new FileWriter("C:\\Users\\Yanick$\\Desktop\\MArio\\MArio" + fileCount + " .txt"));
+        BufferedWriter w = new BufferedWriter(new FileWriter("C:\\Users\\Yanick$\\Desktop\\MArio\\MArio" + fileCount + ".txt"));
         w.write("---------------------");
-        w.write("LearningRate: " + learningRate + ", DiscountRate: " + gamma);
         w.write("---------------------");
         w.newLine();
-        for (int i = 0; i < a.size(); i++) {
-            w.write("Neural Network " + i + ": Managed to complete " + a.get(i) + " levels!");
+        for (int i = 0; i < a.size(); i += 2) {
+            w.write("Neural Network " + i + ": Managed to walk " + a.get(i) + " (" + a.get(i+1) + " Levels)");
             w.newLine();
         }
         w.close();

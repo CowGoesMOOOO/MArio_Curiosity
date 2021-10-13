@@ -24,8 +24,8 @@ public class Organizer implements Runnable {
     private final NeuralNet dummyNet;
     private final NeuralNet network;
     private final QMatrix qMatrix;
-    private boolean first = true;
-    private float highestX;
+    public static float ranX;
+    public static float highestX;
     private int currentState;
     private GameEngine engine;
 
@@ -43,8 +43,9 @@ public class Organizer implements Runnable {
 
     @Override
     public void run() {
+        ranX = 0;
         engine = GameEngine.getInstance();
-        highestX = engine.getMap().getPlayer().getX();
+        highestX = 0;
         while(engine.isRunning()){
             Matrix mapMatrix = createMapMatrix();
 
@@ -108,14 +109,16 @@ public class Organizer implements Runnable {
                 float playerX = engine.getMap().getPlayer().getX();
                 double ereward = (playerX - highestX);
 
-                if(highestX < playerX)
+                if(highestX < playerX) {
                     highestX = playerX;
+                    ranX += highestX - playerX;
+                }
                 int nextState = inFrontOfBlock() == true ? 1 : 0;
 
                 System.out.println(currentState);
                 System.out.println(ireward + ", " + ereward);
                 System.out.println(Arrays.deepToString(qMatrix.getMatrix().getMatrix()));
-                qMatrix.train(currentState, nextState, a.getNumber(), ireward + ereward/10);
+                  //qMatrix.train(currentState, nextState, a.getNumber(), ireward + ereward/10);
             }catch (DimensionMismatchException | AWTException e){
                 e.printStackTrace();
              }
@@ -125,7 +128,7 @@ public class Organizer implements Runnable {
     private Matrix createMapMatrix(){
         TileMap map = engine.getMap();
         Player player = (Player)map.getPlayer();
-
+        
         int tilePlayerX = TileMapDrawer.pixelsToTiles(player.getX());
         int tilePlayerY = TileMapDrawer.pixelsToTiles(player.getY());
         Matrix mapMatrix = new Matrix(25, 1);
