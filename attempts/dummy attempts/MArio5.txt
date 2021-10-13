@@ -1,0 +1,11 @@
+------------------------------------------
+Neural Network 0: Managed to walk 1102 (0 Levels)
+Neural Network 2: Managed to walk 754 (0 Levels)
+Neural Network 4: Managed to walk 1275 (0 Levels)
+Neural Network 6: Managed to walk 603 (0 Levels)
+Neural Network 8: Managed to walk 2390 (0 Levels)
+Neural Network 10: Managed to walk 715 (0 Levels)
+Neural Network 12: Managed to walk 964 (0 Levels)
+Neural Network 14: Managed to walk 874 (0 Levels)
+Neural Network 16: Managed to walk 628 (0 Levels)
+Neural Network 18: Managed to walk 661 (0 Levels)
