@@ -1,0 +1,11 @@
+---------------------LearningRate: 0.18212900030228218, DiscountRate: 0.0897411537458328---------------------
+Neural Network 0: Managed to complete 0 levels!
+Neural Network 1: Managed to complete 0 levels!
+Neural Network 2: Managed to complete 0 levels!
+Neural Network 3: Managed to complete 0 levels!
+Neural Network 4: Managed to complete 1 levels!
+Neural Network 5: Managed to complete 0 levels!
+Neural Network 6: Managed to complete 2 levels!
+Neural Network 7: Managed to complete 3 levels!
+Neural Network 8: Managed to complete 0 levels!
+Neural Network 9: Managed to complete 0 levels!
