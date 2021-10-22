@@ -39,14 +39,16 @@ public class QMatrix {
         double qValue = this.mat.getMatrix()[currentState][action];
         double firstFactor = (1-learningRate)*qValue;
 
+        // Finding the max Q value of state nextState
         double maxQ = Double.NEGATIVE_INFINITY;
         for(int i = 0; i < mat.getRow(); i++){
             if(this.mat.getMatrix()[nextState][i] > maxQ){
                 maxQ = this.mat.getMatrix()[nextState][i];
             }
         }
-
         double secondFactor = learningRate*(reward+(discountRate*(maxQ)));
+
+        // Adjusting the Q-Matrix
         this.mat.getMatrix()[currentState][action] = firstFactor + secondFactor;
     }
 

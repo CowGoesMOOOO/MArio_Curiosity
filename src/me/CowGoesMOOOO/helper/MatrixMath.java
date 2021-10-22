@@ -120,6 +120,12 @@ public class MatrixMath {
         return mat;
     }
 
+    /**
+     * Adds a number to every element of a matrix
+     * @param matrixA The matrix you want to add a number to
+     * @param d The number you want to add
+     * @return Resulting matrix
+     */
     public static Matrix addNumber(Matrix matrixA, double d){
         Matrix mat = matrixA;
         for(int i = 0; i < matrixA.getRow(); i++){

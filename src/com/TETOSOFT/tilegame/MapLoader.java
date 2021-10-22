@@ -180,12 +180,6 @@ public class  MapLoader
                 else if (ch == '*') {
                     addSprite(newMap, goalSprite, x, y);
                 }
-                else if (ch == '1') {
-                    /*SPRITE */ //addSprite(newMap, grubSprite, x, y);
-                }
-                else if (ch == '2') {
-                    /*SPRITE*/ //addSprite(newMap, flySprite, x, y);
-                }
             }
         }
 
@@ -256,18 +250,13 @@ public class  MapLoader
 
         // load left-facing images
         images[0] = new Image[] {
-            loadImage("player.png"),         
-            loadImage("fly1.png"),
-            loadImage("fly2.png"),
-            loadImage("fly3.png"),
-            loadImage("grub1.png"),
-            loadImage("grub2.png"),
+            loadImage("player.png"),
         };
 
         images[1] = new Image[images[0].length];
         images[2] = new Image[images[0].length];
         images[3] = new Image[images[0].length];
-        
+
         for (int i=0; i<images[0].length; i++) 
         {
             // right-facing images
@@ -278,22 +267,14 @@ public class  MapLoader
             images[3][i] = getFlippedImage(images[1][i]);
         }
 
-        // create creature animations
         Animation[] playerAnim = new Animation[4];
-        Animation[] flyAnim = new Animation[4];
-        Animation[] grubAnim = new Animation[4];
         
         for (int i=0; i<4; i++) 
         {
             playerAnim[i] = createPlayerAnim (images[i][0]);
-            flyAnim[i] = createFlyAnim (images[i][1], images[i][1], images[i][3]);
-            grubAnim[i] = createGrubAnim (images[i][4], images[i][5]);
         }
 
-        // create creature sprites
         playerSprite = new Player (playerAnim[0], playerAnim[1],playerAnim[2], playerAnim[3]);
-        flySprite = new Fly (flyAnim[0], flyAnim[1],flyAnim[2], flyAnim[3]);
-        grubSprite = new Grub (grubAnim[0], grubAnim[1],grubAnim[2], grubAnim[3]);
     }
 
 
@@ -304,27 +285,6 @@ public class  MapLoader
      
         return anim;
     }
-
-
-    private Animation createFlyAnim(Image img1, Image img2, Image img3)
-    {
-        Animation anim = new Animation();
-        anim.addFrame(img1, 50);
-        anim.addFrame(img2, 50);
-        anim.addFrame(img3, 50);
-        anim.addFrame(img2, 50);
-        return anim;
-    }
-
-
-    private Animation createGrubAnim(Image img1, Image img2)
-    {
-        Animation anim = new Animation();
-        anim.addFrame(img1, 250);
-        anim.addFrame(img2, 250);
-        return anim;
-    }
-
 
     private void loadPowerUpSprites() 
     {

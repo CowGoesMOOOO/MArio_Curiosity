@@ -128,6 +128,7 @@ public abstract class GameCore implements Runnable{
             }
             catch (InterruptedException ex) { }*/
         }
+        System.exit(0);
     }
 
 

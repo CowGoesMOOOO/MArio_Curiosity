@@ -5,7 +5,7 @@ public enum Action {
 
     private int number;
 
-    private Action(int number){
+    Action(int number){
         this.number = number;
     }
 

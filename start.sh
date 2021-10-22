@@ -1,0 +1,1 @@
+java -jar MA.jar -c 1 -t 60

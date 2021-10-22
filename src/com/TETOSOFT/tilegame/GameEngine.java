@@ -3,6 +3,7 @@ package com.TETOSOFT.tilegame;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -39,15 +40,43 @@ public class GameEngine extends GameCore
     private int collectedStars=0;
     private int numLives=6;
 
+    /**
+     * Starting the game with the timer thread
+     *
+     * If want to start the game without the timer comment the existing code and write:
+     * start(alpha, gamma);
+     * with your alpha and gamma values
+     *
+     * If you want to change the count and times of the timer thread change them batch or shell script.
+     *
+     * If you want to play the game for yourself comment the existing code and write:
+     * gameEngine = new GameEngine();
+     * gameThread = new Thread(game);
+     * gameThread.start();
+     */
     public static void main(String[] args) {
-       TimerThread t = new TimerThread(10,300);
-       Thread thread = new Thread(t);
-       thread.start();
 
-
-        /*gameEngine = new GameEngine();
-        Thread t = new Thread(gameEngine);
-        t.start();*/
+        // Argument parsing and starting the timer thread
+        if(args.length == 4){
+            if(args[0].equals("-c") && args[2].equals("-t")){
+                try {
+                    int maxCount = Integer.parseInt(args[1]);
+                    int secondsPerRound = Integer.parseInt(args[3]);
+                    TimerThread t = new TimerThread(maxCount,secondsPerRound);
+                    Thread thread = new Thread(t);
+                    thread.start();
+                }catch (NumberFormatException e){
+                    System.out.print("One or both arguments were not a number! try -c <count> -t <seconds per round>");
+                    System.exit(1);
+                }
+            } else {
+                System.out.println("Wrong order of arguments! try -c <count> -t <seconds per round>");
+                System.exit(1);
+            }
+        } else {
+            System.out.println("Not enough/too many arguments! try -c <count> -t <seconds per round>");
+            System.exit(1);
+        }
     }
 
     public void init()
@@ -84,7 +113,7 @@ public class GameEngine extends GameCore
         moveLeft = new GameAction("moveLeft");
         moveRight = new GameAction("moveRight");
         jump = new GameAction("jump", GameAction.DETECT_INITAL_PRESS_ONLY);
-        exit = new GameAction("exit",GameAction.DETECT_INITAL_PRESS_ONLY);
+        exit = new GameAction("exit");
         
         inputManager = new InputManager(screen.getFullScreenWindow());
         inputManager.setCursor(InputManager.INVISIBLE_CURSOR);
@@ -193,14 +222,6 @@ public class GameEngine extends GameCore
             return false;
         }
         
-        // if one of the Sprites is a dead Creature, return false
-        if (s1 instanceof Creature && !((Creature)s1).isAlive()) {
-            return false;
-        }
-        if (s2 instanceof Creature && !((Creature)s2).isAlive()) {
-            return false;
-        }
-        
         // get the pixel location of the Sprites
         int s1x = Math.round(s1.getX());
         int s1y = Math.round(s1.getY());
@@ -261,14 +282,6 @@ public class GameEngine extends GameCore
         Iterator i = map.getSprites();
         while (i.hasNext()) {
             Sprite sprite = (Sprite)i.next();
-            if (sprite instanceof Creature) {
-                Creature creature = (Creature)sprite;
-                if (creature.getState() == Creature.STATE_DEAD) {
-                    i.remove();
-                } else {
-                    updateCreature(creature, elapsedTime);
-                }
-            }
             // normal update
             sprite.update(elapsedTime);
         }
@@ -309,7 +322,7 @@ public class GameEngine extends GameCore
             creature.collideHorizontal();
         }
         if (creature instanceof Player) {
-            checkPlayerCollision((Player)creature, false);
+            checkPlayerCollision((Player)creature);
         }
         
         // change y
@@ -332,8 +345,7 @@ public class GameEngine extends GameCore
             creature.collideVertical();
         }
         if (creature instanceof Player) {
-            boolean canKill = (oldY < creature.getY());
-            checkPlayerCollision((Player)creature, canKill);
+            checkPlayerCollision((Player)creature);
         }
         
     }
@@ -344,8 +356,7 @@ public class GameEngine extends GameCore
      * canKill is true, collisions with Creatures will kill
      * them.
      */
-    public void checkPlayerCollision(Player player,
-            boolean canKill) {
+    public void checkPlayerCollision(Player player) {
         if (!player.isAlive()) {
             return;
         }
@@ -354,26 +365,6 @@ public class GameEngine extends GameCore
         Sprite collisionSprite = getSpriteCollision(player);
         if (collisionSprite instanceof PowerUp) {
             acquirePowerUp((PowerUp)collisionSprite);
-        } else if (collisionSprite instanceof Creature) {
-            Creature badguy = (Creature)collisionSprite;
-            if (canKill) {
-                // kill the badguy and make player bounce
-                badguy.setState(Creature.STATE_DYING);
-                player.setY(badguy.getY() - player.getHeight());
-                player.jump(true);
-            } else {
-                // player dies!
-                player.setState(Creature.STATE_DYING);
-                numLives--;
-                if(numLives==0) {
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                    stop();
-                }
-            }
         }
     }
     

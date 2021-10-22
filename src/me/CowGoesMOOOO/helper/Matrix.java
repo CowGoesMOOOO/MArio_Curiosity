@@ -31,6 +31,9 @@ public class Matrix {
         mat = new double[row][col];
     }
 
+    /**
+     * Fills a matrix with random numbers
+     */
     public void fillGaussian(){
         Random rnd = new Random();
         for(int i = 0; i < row; i++){
