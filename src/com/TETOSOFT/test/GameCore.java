@@ -121,14 +121,7 @@ public abstract class GameCore implements Runnable{
             draw(g);
             g.dispose();
             screen.update();
-
-            // don't take a nap! run as fast as possible
-            /*try {
-                Thread.sleep(20);
-            }
-            catch (InterruptedException ex) { }*/
         }
-        System.exit(0);
     }
 
 

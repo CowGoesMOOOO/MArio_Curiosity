@@ -4,6 +4,7 @@ import com.TETOSOFT.tilegame.GameEngine;
 import me.CowGoesMOOOO.main.Organizer;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class TimerThread implements Runnable{
      */
     @Override
     public void run() {
+
         // Creating the variables
         ArrayList<Integer> a = new ArrayList<Integer>();
 
@@ -86,14 +88,20 @@ public class TimerThread implements Runnable{
         }
     }
 
+    // Writing the results of the attempt to a file.
     public void writeToFile(ArrayList<Integer> a) throws IOException {
-        BufferedWriter w = new BufferedWriter(new FileWriter("attempts\\MArio.txt"));
+        File f = new File(System.getProperty("user.dir") + "\\Mario.txt");
+        if(!f.exists()){
+            f.createNewFile();
+        }
+        BufferedWriter w = new BufferedWriter(new FileWriter(f));
         w.write("---------------------");
         w.newLine();
         for (int i = 0; i < a.size(); i += 2) {
-            w.write("Neural Network " + i + ": Managed to walk " + a.get(i) + " (" + a.get(i+1) + " Levels)");
+            w.write("Neural Network: Managed to walk " + a.get(i) + " (" + a.get(i+1) + " Levels)");
             w.newLine();
         }
         w.close();
+        System.exit(0);
     }
 }
